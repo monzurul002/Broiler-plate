@@ -1,8 +1,17 @@
 //backend express code
 const databaseCollection = client.db("usersDb").collection("user")
 
-//warning:use verifyJWT befor verifyAdmin
+//warning:use verifyJWT before using verifyAdmin
 
+const verifyAdmin = async (req, res, next) => {
+    const email = req.params.email;
+    const query = { email: email }
+    const user = await databaseCollection.findOne(query);
+    if (user?.role !== "admin") {
+        return res.status(403).send({ error: true, admin: false })
+    }
+    next()
+}
 
 
 app.use("/users/admin/:email", verifyToken, async (req, res) => {
